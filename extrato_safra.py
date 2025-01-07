@@ -5,7 +5,7 @@ import pandas as pd
 
 def encontra_arquivos():
     caminho_base = Path(
-        R"\\portaarquivos\Agenda\TESOURARIA\CONTAS A PAGAR\Conciliação DDA\2025\01 - JANEIRO"
+        R"\\portaarquivos\Agenda\TESOURARIA\CONTAS A PAGAR\Conciliação DDA\2025"
     )
 
     caminho = caminho_base
@@ -54,7 +54,7 @@ def execute(data:str):
         df_padronizado = padronizar_tabelas(df_bruto)
         df_rel_final = pd.concat([df_rel_final, df_padronizado], ignore_index=True)
 
-    df_filtrado = filtro_data(df_rel_final,data)
+    df_filtrado = filtro_data(df_rel_final,data) 
 
     print(f"Retorno do df Mesclado e filtrado:\n{df_filtrado}")
 

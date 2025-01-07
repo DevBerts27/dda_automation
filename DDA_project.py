@@ -9,7 +9,7 @@ def main():
     
     df_safra = es.execute(data.strftime("%d-%m-%Y")) #Busca em padrão brasileiro de datas
     df_anita = ra.execute(data.strftime("%Y-%m-%d")) #Busca em padrão Americano de datas
-            
+    
     print(df_safra)
     print(df_anita)
 
