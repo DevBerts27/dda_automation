@@ -1,15 +1,15 @@
 import relat_anita as ra
 import extrato_safra as es
+import pandas as pd
 
 def main():
     
-    df_safra = es.execute()
+    data:pd.Timestamp = pd.to_datetime(input("Digite a data de vencimento:\n {dd/mm/aaaa} \n"),dayfirst=True)
+    print(f"Data Procurada: {data.strftime("%d-%m-%Y")}")
     
-    # data:pd.Timestamp = pd.to_datetime(input("Digite a data de vencimento:\n {dd/mm/aaaa} \n"),format="%d-%m-%Y")
-    # data = data.strftime("%Y-%m-%d")
-    data: str = "2025-01-03"
-    df_anita = ra.execute(data)
-
+    df_safra = es.execute(data.strftime("%d-%m-%Y")) #Busca em padrão brasileiro de datas
+    df_anita = ra.execute(data.strftime("%Y-%m-%d")) #Busca em padrão Americano de datas
+            
     print(df_safra)
     print(df_anita)
 

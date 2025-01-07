@@ -67,12 +67,12 @@ def formata_df(df: pd.DataFrame):
 
     return df
 
-def execute(data):
+def execute(data:str):
     
     df = rel_anita(data)
     df_format =formata_df(df)
     
     return df_format
     
-if __name__ == "__main__":
-    execute()
+# if __name__ == "__main__":
+#     execute()

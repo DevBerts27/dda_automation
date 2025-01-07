@@ -33,8 +33,15 @@ def padronizar_tabelas(df: pd.DataFrame):
 
     return df
 
+def filtro_data(df:pd.DataFrame, data:str):
+    
+    df['Vencimento'] = pd.to_datetime(df['Vencimento'])
+    data_filtro = data
+    df_filtrado = df[(df['Vencimento'] == data_filtro)]
+    
+    return df_filtrado
 
-def execute():
+def execute(data:str):
 
     df_rel_final = pd.DataFrame()
 
@@ -47,11 +54,12 @@ def execute():
         df_padronizado = padronizar_tabelas(df_bruto)
         df_rel_final = pd.concat([df_rel_final, df_padronizado], ignore_index=True)
 
-    print("\nDataFrame Final Mesclado:")
-    print(df_rel_final)
+    df_filtrado = filtro_data(df_rel_final,data)
 
-    return df_rel_final
+    print(f"Retorno do df Mesclado e filtrado:\n{df_filtrado}")
+
+    return df_filtrado
 
 
-if __name__ == "__main__":
-    execute()
+# if __name__ == "__main__":
+#     execute("03-01-2025")
