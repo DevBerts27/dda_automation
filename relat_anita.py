@@ -6,19 +6,20 @@ import senhas as se
 QUERY = """
 SELECT
     AP_NOTA AS NOTA,
-    AP_DUPL AS DUPLICATA,
-    AP_TIPOCOMPROMISSO AS TIPO,
+    AP_TIPO AS TIPO,
+    AP_PARTE AS PARTE,
     AP_CODFOR AS COD_FORNECEDOR,
     AP_NOMEFOR AS NOME_FORNECEDOR,
-    AP_DATAV AS DATA_VENCIMENTO,
-    AP_NCBOLETO AS BOLETO,
-    COALESCE(AP_BAIXA_MANUAL, '') AS AP_BAIXA_MANUAL,
-    COALESCE(AP_ESPECIE, '') AS AP_ESPECIE,
+    AP_DATAV,
+    AP_BAIXA_MANUAL, --BNC
+    AP_ESPECIE, --BNC
     AP_VALOR AS VALOR,
     AP_DESC AS DESCONTO,
+    AP_VALORDEV AS DEVOLUCAO,
     AP_LOJA AS LOJA
 FROM A_PAGAR 
-WHERE AP_DATAV = ?
+WHERE AP_DATAV = ? AND AP_BAIXA_MANUAL <> 'N'
+ORDER BY VALOR DESC
 """
 
 # Query feita para pegar apenas os dados necessários do anita...
@@ -63,8 +64,11 @@ def formata_df(df: pd.DataFrame):
         "X", np.nan
     ).fillna("")
     df.drop(["AP_BAIXA_MANUAL", "AP_ESPECIE"], axis=1, inplace=True)
-    df["BOLETO"].fillna("")
 
+    df["SALDO"] = df["VALOR"] - df["DESCONTO"] - df["DEVOLUCAO"]
+
+    df['NRO.BOL'] = df['NOTA'].astype(str) + df['TIPO'].astype(str) + df['PARTE'].astype(str)
+    
     return df
 
 def execute(data:str):
@@ -75,4 +79,4 @@ def execute(data:str):
     return df_format
     
 # if __name__ == "__main__":
-#     execute()
+#     execute("2025-01-03")

@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import pandas as pd
 
@@ -31,17 +30,23 @@ def padronizar_tabelas(df: pd.DataFrame):
     df["Valor Total (R$)"] = df["Valor Total (R$)"].astype(float).round(2)
     df["Nominal (R$)"] = df["Nominal (R$)"].astype(float).round(2)
 
+    df["Nº documento"] = df["Nº documento"].str.replace(r'\D', '', regex=True)
+    
+    df.sort_values(by="Nominal (R$)", ascending=False)
+    
     return df
 
-def filtro_data(df:pd.DataFrame, data:str):
-    
-    df['Vencimento'] = pd.to_datetime(df['Vencimento'])
+
+def filtro_data(df: pd.DataFrame, data: str):
+
+    df["Vencimento"] = pd.to_datetime(df["Vencimento"])
     data_filtro = data
-    df_filtrado = df[(df['Vencimento'] == data_filtro)]
-    
+    df_filtrado = df[(df["Vencimento"] == data_filtro)]
+
     return df_filtrado
 
-def execute(data:str):
+
+def execute(data: str):
 
     df_rel_final = pd.DataFrame()
 
@@ -54,7 +59,7 @@ def execute(data:str):
         df_padronizado = padronizar_tabelas(df_bruto)
         df_rel_final = pd.concat([df_rel_final, df_padronizado], ignore_index=True)
 
-    df_filtrado = filtro_data(df_rel_final,data) 
+    df_filtrado = filtro_data(df_rel_final, data)
 
     print(f"Retorno do df Mesclado e filtrado:\n{df_filtrado}")
 
