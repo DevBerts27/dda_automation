@@ -43,6 +43,7 @@ def rel_anita(data_rel: str) -> pd.DataFrame:
             df = pd.DataFrame(
                 map(list, res), columns=[desc[0] for desc in res.description]
             )
+            print("Extraindo relatórios do DB")
             # Verificar se há dados
             if df.empty:
                 print("Nenhum dado encontrado")
