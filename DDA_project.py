@@ -4,6 +4,7 @@ import pandas as pd
 import openpyxl
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+from pathlib import Path
 
 def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
@@ -57,8 +58,10 @@ def main():
     print(f"Coniliado\n{conciliado}")
 
     nome_arquivo = f"relatorio_{data.strftime("%d-%m-%Y")}.xlsx"
+    
+    caminho_saida = Path(f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\RelatórioDDA\\{nome_arquivo}")
 
-    with pd.ExcelWriter(nome_arquivo, engine="openpyxl") as writer:
+    with pd.ExcelWriter(caminho_saida, engine="openpyxl") as writer:
         df_safra.to_excel(writer, sheet_name="Safra", index=False)
         df_anita.to_excel(writer, sheet_name="Anita", index=False)
         conciliado.to_excel(writer, sheet_name="Conciliado", index=False)
