@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+from collections import deque
 
 def encontra_arquivos() -> list[Path]:
     """Procura arquivos que começam com 'boletos dda' em uma estrutura de diretórios."""
@@ -7,8 +8,8 @@ def encontra_arquivos() -> list[Path]:
         R"\\portaarquivos\Agenda\TESOURARIA\CONTAS A PAGAR\Conciliação DDA\2025"
     )
 
-    result = []
-    for pasta, _, lista_arquivos in caminho_base.walk():
+    result:list = deque(maxlen=3)
+    for pasta, _, lista_arquivos in caminho_base.walk(top_down=False):
         for arquivo in lista_arquivos:
             if arquivo.lower().startswith("boletos dda"):
                 caminho_completo = Path(pasta) / arquivo
