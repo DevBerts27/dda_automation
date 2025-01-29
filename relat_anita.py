@@ -9,16 +9,16 @@ SELECT
     AP_TIPO AS TIPO,
     AP_PARTE AS PARTE,
     AP_CODFOR AS COD_FORNECEDOR,
+    AP_BOLETO AS BOLETO,
     AP_NOMEFOR AS NOME_FORNECEDOR,
     AP_DATAV,
-    AP_BAIXA_MANUAL, --BNC
-    AP_ESPECIE, --BNC
     AP_VALOR AS VALOR,
     AP_DESC AS DESCONTO,
     AP_VALORDEV AS DEVOLUCAO,
-    AP_LOJA AS LOJA
+    AP_LOJA AS LOJA,
+    CASE WHEN AP_BOLETO = '' OR AP_BOLETO IS NULL THEN 'N' WHEN AP_ESPECIE NOT IN ('C') THEN 'B' WHEN AP_ESPECIE = 'C' THEN 'C' END AS BNC
 FROM A_PAGAR 
-WHERE AP_DATAV = ? AND (AP_BAIXA_MANUAL <> 'N' AND AP_BAIXA_MANUAL <> 'B' AND AP_ESPECIE <> 'C')
+WHERE AP_DATAV = ?
 ORDER BY VALOR DESC
 """
 
@@ -61,16 +61,17 @@ def formata_df(df: pd.DataFrame):
     Returns:
         _type_: pd.DataFrame
     """
-    df["BNC"] = df["AP_BAIXA_MANUAL"].fillna("") + df["AP_ESPECIE"].replace(
-        "X", np.nan
-    ).fillna("")
-    df.drop(["AP_BAIXA_MANUAL", "AP_ESPECIE"], axis=1, inplace=True)
 
     df["SALDO"] = df["VALOR"] - df["DESCONTO"] - df["DEVOLUCAO"]
 
     df['NRO.BOL'] = df['NOTA'].astype(str) + df['TIPO'].astype(str) + df['PARTE'].astype(str)
     
-    return df
+    df_filtrado = df[df["BNC"] == 'N']
+    
+    print(df_filtrado)
+    df_filtrado.to_clipboard(excel=True)
+    
+    return df_filtrado
 
 def execute(data:str):
     
@@ -80,4 +81,4 @@ def execute(data:str):
     return df_format
     
 # if __name__ == "__main__":
-#     execute("2025-01-03")
+#     execute("2025-01-31")

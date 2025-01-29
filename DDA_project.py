@@ -5,6 +5,7 @@ import openpyxl
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from pathlib import Path
+import pyfiglet
 
 def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
@@ -34,17 +35,20 @@ def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
 def main():
 
+    print(pyfiglet.figlet_format("DDA\nAutomatizado\n", font="slant"))
+    
     # data: pd.Timestamp = pd.to_datetime(
     #     "15-01-2025", dayfirst=True
     # )
-    
-    print("Lista de Extratos encontrados do Safra...")
-    [print(f"Arquivo: {arquivo.name}") for arquivo in es.encontra_arquivos() ]
+        
+    print("\nLista de Extratos encontrados do Safra...\n")
+    [print(f">> {arquivo.name}") for arquivo in es.encontra_arquivos() ]
     
     data: pd.Timestamp = pd.to_datetime(
-        input("Digite a data de vencimento:\n{dd/mm/aaaa}\n"), dayfirst=True
+        input("\nDigite a data de vencimento...\nNo padrão: dd-mm-aaaa\n"), dayfirst=True
     )
-    print(f"Data Procurada: {data.strftime("%d-%m-%Y")}")
+    
+    print(f"Data Procurada: {data.strftime("%d-%m-%Y")}\n")
 
     df_safra = es.execute(
         data.strftime("%d-%m-%Y")
@@ -53,9 +57,10 @@ def main():
         data.strftime("%Y-%m-%d")
     )  # Busca em padrão Americano de datas
 
+    print("Processando...\n")
     conciliado = conciliacao_DDA(df_safra, df_anita)
 
-    print(f"Coniliado\n{conciliado}")
+    print(f"Tabela Final\n{conciliado}")
 
     nome_arquivo = f"relatorio_{data.strftime("%d-%m-%Y")}.xlsx"
     
@@ -65,6 +70,9 @@ def main():
         df_safra.to_excel(writer, sheet_name="Safra", index=False)
         df_anita.to_excel(writer, sheet_name="Anita", index=False)
         conciliado.to_excel(writer, sheet_name="Conciliado", index=False)
+    print("Concluido! ;)\n")
+    
+    input("Pressione ENTER tecla para sair...")
 
 if __name__ == "__main__":
     main()

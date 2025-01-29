@@ -1,0 +1,7 @@
+pathlib
+openpyxl
+pandas
+pyodbc
+numpy
+pyfiglet
+watchdog
