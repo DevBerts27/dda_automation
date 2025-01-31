@@ -1,14 +1,16 @@
 from pathlib import Path
 import pandas as pd
-from collections import deque
 
 def encontra_arquivos() -> list[Path]:
     """Procura arquivos que começam com 'boletos dda' em uma estrutura de diretórios."""
     caminho_base = Path(
         R"\\portaarquivos\Agenda\TESOURARIA\CONTAS A PAGAR\Conciliação DDA\2025"
     )
+    # caminho_base = Path(
+    #     R"C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste"
+    # )
 
-    result:list = deque(maxlen=3)
+    result:list = []
     for pasta, _, lista_arquivos in caminho_base.walk(top_down=False):
         for arquivo in lista_arquivos:
             if arquivo.lower().startswith("boletos dda"):
@@ -57,25 +59,25 @@ def filtro_data(df: pd.DataFrame, data: str) -> pd.DataFrame:
 
     return df_filtrado
 
-def execute(data: str) -> pd.DataFrame:
+def execute(data: str, arquivo:Path) -> pd.DataFrame:
     """Executa o fluxo completo de processamento e filtra os dados por uma data especificada."""
     df_rel_final = pd.DataFrame()
 
-    arquivos = encontra_arquivos()
+    #arquivos = encontra_arquivos()
+    #for arquivo in arquivos:
+    
+    print(f"Processando arquivo: {arquivo}")
+    df_bruto = pd.read_excel(arquivo)
 
-    for arquivo in arquivos:
-        print(f"Processando arquivo: {arquivo}")
-        df_bruto = pd.read_excel(arquivo)
+    # Padroniza as tabelas
+    try:
+        df_padronizado = padronizar_tabelas(df_bruto)
+    except Exception as e:
+        print(f"Erro ao padronizar o arquivo {arquivo}: {e}")
+        # continue
 
-        # Padroniza as tabelas
-        try:
-            df_padronizado = padronizar_tabelas(df_bruto)
-        except Exception as e:
-            print(f"Erro ao padronizar o arquivo {arquivo}: {e}")
-            continue
-
-        df_rel_final = pd.concat([df_rel_final, df_padronizado], ignore_index=True)
-
+    df_rel_final = pd.concat([df_rel_final, df_padronizado], ignore_index=True)
+       
     if df_rel_final.empty:
         raise ValueError("Nenhum dado processado nos arquivos encontrados.")
 
