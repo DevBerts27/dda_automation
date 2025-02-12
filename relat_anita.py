@@ -69,7 +69,6 @@ def formata_df(df: pd.DataFrame):
     df_filtrado = df[df["BNC"] == 'N']
     
     print(df_filtrado)
-    df_filtrado.to_clipboard(excel=True)
     
     return df_filtrado
 

@@ -6,3 +6,4 @@ extrato_safra_v2_alpha.py
 watch_dog.py
 banco_cache.py
 .vscode
+LOG.db

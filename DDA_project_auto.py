@@ -122,7 +122,7 @@ def execute():
 
         print(f"Tabela Final\n{conciliado}")
 
-        nome_arquivo = f"relatorio_{data_formatada.strftime("%d-%m-%Y")}.xlsx"
+        nome_arquivo = f"relatorio_{data_formatada.strftime('%d-%m-%Y')}.xlsx"
         
         caminho_saida = Path(f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\RelatórioDDA\\{nome_arquivo}")
         #caminho_saida = Path(f"C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste_2\\{nome_arquivo}")
