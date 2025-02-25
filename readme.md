@@ -5,7 +5,6 @@ Este projeto tem como objetivo automatizar a conciliação de dados financeiros 
 
 ## Estrutura do Projeto
 
-- `DDA_project.py`: Script principal que executa a conciliação de dados.
 - `DDA_docker_auto.py`: Script para execução automatizada utilizando Docker.
 - `extrato_safra.py`: Módulo responsável por processar os extratos do banco Safra.
 - `relat_anita.py`: Módulo responsável por processar os relatórios do sistema Anita.
@@ -13,6 +12,10 @@ Este projeto tem como objetivo automatizar a conciliação de dados financeiros 
 - `requirements.txt`: Arquivo com as dependências do projeto.
 - `Dockerfile`: Arquivo de configuração para criação da imagem Docker.
 - `Makefile`: Arquivo para facilitar a execução de comandos Docker.
+
+- `DDA_project_auto_v2.py`: Arquivo para executar no terminal em loop infinito até que o usuário pare, com um timer de execução de 60s. (Arquivo atualizado, funciona como um backup caso o docker pare de funcionar)
+- `DDA_docker_auto.py`: Arquivo arquivo deprecado para executar no terminal utilizando o watchdog para vigiar a pasta. (arquivo descontinuado)
+- `DDA_project.py`: Arquivo para executar no terminal manualmente. (arquivo descontinuado)
 
 ## Dependências
 
@@ -29,10 +32,12 @@ pip install -r requirements.txt
 Para executar o script principal manualmente, utilize:
 
 ```sh
-python DDA_project.py
+python DDA_project_v2.py
 ```
 
 ### Utilizando Docker
+
+!! ATENÇÃO O COMANDO MAKE DO MAKEFILE FUNCIONA APENAS NO LINUX ou no WSL !!
 
 Para executar o projeto utilizando Docker, siga os passos abaixo:
 
