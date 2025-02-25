@@ -20,6 +20,7 @@ SELECT
 FROM A_PAGAR 
 WHERE AP_DATAV = ?
 ORDER BY VALOR DESC
+FOR BROWSE
 """
 
 # Query feita para pegar apenas os dados necessários do anita...
