@@ -97,7 +97,7 @@ def execute(caminho_arquivo: str):
     print(f"Tabela Final\n{conciliado}")
 
     nome_arquivo_saida = f"relatorio_{data_formatada.strftime('%d-%m-%Y')}.xlsx"
-    caminho_saida = Path(f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\RelatórioDDA\\{nome_arquivo_saida}")
+    caminho_saida = Path(f"ALGUM CAMINHO\\{nome_arquivo_saida}")
 
     with pd.ExcelWriter(caminho_saida, engine="openpyxl") as writer:
         df_safra.to_excel(writer, sheet_name="Safra", index=False)
@@ -110,7 +110,7 @@ def execute(caminho_arquivo: str):
 if __name__ == "__main__":
     if not bd.banco_existe():
         bd.criar_tabela()
-    pasta_para_vigiar = Path("\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025")
+    pasta_para_vigiar = Path("ALGUM CAMINHO")
     print(pyfiglet.figlet_format("DDA\nAutomatizado\n", font="slant"))
     print(f"Lista de arquivos processados:\n{bd.carregar_log()}")
     extensoes = [".xlsx"]

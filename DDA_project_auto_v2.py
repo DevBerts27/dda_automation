@@ -66,10 +66,8 @@ def processar_arquivo(caminho_arquivo: Path):
 
     nome_arquivo_saida = f"relatorio_{data_formatada.strftime('%d-%m-%Y')}.xlsx"
     caminho_saida = Path(
-        f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\RelatórioDDA\\{nome_arquivo_saida}"
+        f"ALGUM CAMINHO /{nome_arquivo_saida}"
     )
-    # Para teste local, descomente:
-    # caminho_saida = Path(f"C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste_2\\{nome_arquivo_saida}")
 
     with pd.ExcelWriter(caminho_saida, engine="openpyxl") as writer:
         df_safra.to_excel(writer, sheet_name="Safra", index=False)
@@ -114,15 +112,9 @@ if __name__ == "__main__":
     print(pyfiglet.figlet_format("DDA\nAutomatizado\n", font="slant"))
     print(f"Lista de arquivos processados:\n{bd.carregar_log()}")
     
-    # Defina a pasta que será verificada
-    # pasta_para_verificar = Path(
-    #     "\\mnt\\m:\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
-    # )
     pasta_para_verificar = Path(
-        "\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
+        "ALGUM CAMINHO"
     )
-    # Para testes locais, descomente:
-    # pasta_para_verificar = Path("C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste")
     
     extensoes = [".xlsx"]
     main_loop(pasta_para_verificar, extensoes)

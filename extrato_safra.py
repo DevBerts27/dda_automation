@@ -4,11 +4,8 @@ import pandas as pd
 def encontra_arquivos() -> list[Path]:
     """Procura arquivos que começam com 'boletos dda' em uma estrutura de diretórios."""
     caminho_base = Path(
-        R"\\portaarquivos\Agenda\TESOURARIA\CONTAS A PAGAR\Conciliação DDA\2025"
+        R"ALGUM CAMINHO"
     )
-    # caminho_base = Path(
-    #     R"C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste"
-    # )
 
     result:list = []
     for pasta, _, lista_arquivos in caminho_base.walk(top_down=False):

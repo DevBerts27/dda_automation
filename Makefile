@@ -4,7 +4,7 @@ CONTAINER_NAME := dda
 
 # A imagem final vai se chamar: seu-registry.com/usuario/meu_app:1.0.0
 
-# ----- Comandos padrão -----
+# ----- Comandos padrão ----
 
 .PHONY: build run stop push clean
 

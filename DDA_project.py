@@ -64,7 +64,7 @@ def main():
 
     nome_arquivo = f"relatorio_{data.strftime("%d-%m-%Y")}.xlsx"
     
-    caminho_saida = Path(f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\RelatórioDDA\\{nome_arquivo}")
+    caminho_saida = Path(f"ALGUM CAMINHO\\{nome_arquivo}")
 
     with pd.ExcelWriter(caminho_saida, engine="openpyxl") as writer:
         df_safra.to_excel(writer, sheet_name="Safra", index=False)

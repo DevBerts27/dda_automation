@@ -62,7 +62,6 @@ def formata_df(df: pd.DataFrame):
     Returns:
         _type_: pd.DataFrame
     """
-
     df["SALDO"] = df["VALOR"] - df["DESCONTO"] - df["DEVOLUCAO"]
 
     df['NRO.BOL'] = df['NOTA'].astype(str) + df['TIPO'].astype(str) + df['PARTE'].astype(str)
