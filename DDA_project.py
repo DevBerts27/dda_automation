@@ -1,11 +1,13 @@
-import relat_anita as ra
-import extrato_safra as es
-import pandas as pd
+from pathlib import Path
+
 import openpyxl
+import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
-from pathlib import Path
-import pyfiglet
+
+import extrato_safra as es
+import relat_anita as ra
+
 
 def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
@@ -15,7 +17,7 @@ def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     rel_anita["SALDO"] = (
         rel_anita["SALDO"].replace(",", ".", regex=True).astype(float).round(2)
     ).sort_values(ascending=False)
-    
+
     conciliado = rel_safra.merge(rel_anita, left_on="Nominal (R$)", right_on="SALDO", how="outer")
 
     # conciliado = pd.concat(
@@ -35,19 +37,18 @@ def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
 def main():
 
-    print(pyfiglet.figlet_format("DDA\nAutomatizado\n", font="slant"))
-    
+
     # data: pd.Timestamp = pd.to_datetime(
     #     "15-01-2025", dayfirst=True
     # )
-        
+
     print("\nLista de Extratos encontrados do Safra...\n")
     [print(f">> {arquivo.name}") for arquivo in es.encontra_arquivos() ]
-    
+
     data: pd.Timestamp = pd.to_datetime(
         input("\nDigite a data de vencimento...\nNo padrão: dd-mm-aaaa\n"), dayfirst=True
     )
-    
+
     print(f"Data Procurada: {data.strftime("%d-%m-%Y")}\n")
 
     df_safra = es.execute(
@@ -63,15 +64,15 @@ def main():
     print(f"Tabela Final\n{conciliado}")
 
     nome_arquivo = f"relatorio_{data.strftime("%d-%m-%Y")}.xlsx"
-    
-    caminho_saida = Path(f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\RelatórioDDA\\{nome_arquivo}")
+
+    caminho_saida = Path(f"C:\\Users\\pedro.bertoldo\\Desktop\\asdasd\\{nome_arquivo}")
 
     with pd.ExcelWriter(caminho_saida, engine="openpyxl") as writer:
         df_safra.to_excel(writer, sheet_name="Safra", index=False)
         df_anita.to_excel(writer, sheet_name="Anita", index=False)
         conciliado.to_excel(writer, sheet_name="Conciliado", index=False)
     print("Concluido! ;)\n")
-    
+
     input("Pressione ENTER tecla para sair...")
 
 if __name__ == "__main__":

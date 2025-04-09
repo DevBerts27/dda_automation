@@ -38,7 +38,7 @@ def rel_anita(data_rel: str) -> pd.DataFrame:
         url_conexao = se.url_conexao
         
         # Gerenciamento de conexão com `with`
-        with pyodbc.connect(url_conexao) as conexao:
+        with pyodbc.connect("DSN=BDMTRIZ") as conexao: 
             res = conexao.cursor().execute(QUERY, data_rel)
             # Criar DataFrame a partir dos resultados
             df = pd.DataFrame(
