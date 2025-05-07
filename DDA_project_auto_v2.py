@@ -20,8 +20,6 @@ def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     rel_anita["SALDO"].replace(",", ".", regex=True).astype(float).round(2)
     ).sort_values(ascending=False)
 
-#--------------------------------------------------------------------------------------
-
     rel_safra["Valor_novo"] = np.where(
         (rel_safra["Nominal (R$)"] > rel_safra["Valor Total (R$)"])
         & (rel_safra["Valor Total (R$)"] != 0),
@@ -30,13 +28,20 @@ def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     )
 
     conciliado = rel_safra.merge(
-        rel_anita, left_on="Valor_novo", right_on="SALDO", how="outer"
+        rel_anita, left_on="Valor_novo", right_on="SALDO", how="outer",
     )
 
-    conciliado = conciliado.reindex(columns=["Valor_novo", "SALDO"]).sort_index(
+    nota_map = rel_anita.set_index("SALDO")["NOTA"].to_dict()
+    conciliado["Nota_Anita"] = conciliado["SALDO"].map(nota_map)
+
+    conciliado = conciliado.reindex(columns=["Valor_novo", "SALDO", "Nota_Anita"]).sort_index(
         ascending=False
     )
-        
+    
+    conciliado.rename(
+        columns={"Valor_novo": "Valor_Safra", "SALDO": "Valor_Anita"}, inplace=True
+    )
+    
     # rel_safra["Nominal (R$)"] = (
     #     rel_safra["Nominal (R$)"].replace(",", ".", regex=True).astype(float).round(2)
     # ).sort_values(ascending=False)
@@ -47,8 +52,6 @@ def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     # conciliado = conciliado.reindex(columns=["Nominal (R$)", "SALDO"]).sort_index(
     #     ascending=False
     # )
-    
-#--------------------------------------------------------------------------------------
     
     conciliado["Conciliado"] = [
         f"=IF(A{i}=B{i},TRUE,FALSE)" for i in range(2, len(conciliado) + 2)
