@@ -1,24 +1,25 @@
 import pandas as pd
 import pyodbc
 import numpy as np
-import senhas as se
+import Config.senhas as se
 
 QUERY = """
 SELECT
     AP_NOTA AS NOTA,
+    AP_DUPL AS DUPLICATA,
     AP_TIPO AS TIPO,
     AP_PARTE AS PARTE,
     AP_CODFOR AS COD_FORNECEDOR,
     AP_BOLETO AS BOLETO,
     AP_NOMEFOR AS NOME_FORNECEDOR,
-    AP_DATAV,
+    AP_DATAV AS DATA_VENCIMENTO,
     AP_VALOR AS VALOR,
     AP_DESC AS DESCONTO,
     AP_VALORDEV AS DEVOLUCAO,
     AP_LOJA AS LOJA,
     CASE WHEN AP_BOLETO = '' OR AP_BOLETO IS NULL THEN 'N' WHEN AP_ESPECIE NOT IN ('C') THEN 'B' WHEN AP_ESPECIE = 'C' THEN 'C' END AS BNC
-FROM A_PAGAR 
-WHERE AP_DATAV = ?
+FROM A_PAGAR
+WHERE AP_DATAV = ? AND AP_DATAP = '0001-01-01' AND AP_TIPOCOMPROMISSO <> 150
 ORDER BY VALOR DESC
 FOR BROWSE
 """
@@ -73,12 +74,33 @@ def formata_df(df: pd.DataFrame):
     
     return df_filtrado
 
+def valor_por_nota(df: pd.DataFrame) -> pd.DataFrame:
+    """Agrupa o DataFrame por NOTA e soma os valores.
+
+    Args:
+        df (pd.DataFrame): DataFrame com a coluna 'NOTA'.
+
+    Returns:
+        pd.DataFrame: DataFrame agrupado e somado.
+    """
+    df_copia = df.copy()
+    
+    df_grouped = df_copia.groupby('NOTA').agg({'VALOR': 'sum', 'DESCONTO': 'sum', 'DEVOLUCAO': 'sum'}).reset_index()
+    df_copia[""] = np.nan
+    df_copia["valor_por_nota"] = df_grouped['VALOR'].astype(float).round(2)
+    # df_copia["desconto_por_nota"] = df_grouped['DESCONTO'].astype(float).round(2)
+    # df_copia["devolucao_por_nota"] = df_grouped['DEVOLUCAO'].astype(float).round(2)
+    df_copia["nota"] = df_grouped["NOTA"].astype(str)
+    
+    return df_copia
+    
 def execute(data:str):
     
     df = rel_anita(data)
     df_format =formata_df(df)
     
+    # df_valor_por_nota:pd.DataFrame = valor_por_nota(df_format)
     return df_format
     
 # if __name__ == "__main__":
-#     execute("2025-01-31")
+#     execute("2025-05-30")

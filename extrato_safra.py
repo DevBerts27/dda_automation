@@ -1,23 +1,6 @@
 from pathlib import Path
 import pandas as pd
 
-# def encontra_arquivos() -> list[Path]:
-#     """Procura arquivos que começam com 'boletos dda' em uma estrutura de diretórios."""
-#     caminho_base = Path(
-#         R"\\portaarquivos\Agenda\TESOURARIA\CONTAS A PAGAR\Conciliação DDA\2025"
-#     )
-#     # caminho_base = Path(
-#     #     R"C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste"
-#     # )
-
-#     result:list = []
-#     for pasta, _, lista_arquivos in caminho_base.walk(top_down=False):
-#         for arquivo in lista_arquivos:
-#             if arquivo.lower().startswith("boletos dda"):
-#                 caminho_completo = Path(pasta) / arquivo
-#                 result.append(caminho_completo)
-
-#     return result
 
 def padronizar_tabelas(df: pd.DataFrame) -> pd.DataFrame:
     """Padroniza as colunas e formatação da tabela importada."""
@@ -42,6 +25,8 @@ def padronizar_tabelas(df: pd.DataFrame) -> pd.DataFrame:
     df.sort_values(by="Nominal (R$)", ascending=False, inplace=True)
     
     df["desconto"] = df["Nominal (R$)"] - df["Valor Total (R$)"]
+
+    df.drop(axis=0 , index=df[df["Situação"] == "PAGO"].index, inplace=True)
 
     return df
 

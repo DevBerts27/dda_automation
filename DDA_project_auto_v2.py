@@ -9,12 +9,13 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 import numpy as np
 
-import BD_cache as bd
+import Database.BD_cache as bd
 import extrato_safra as es
 import relat_anita as ra
 
-
-def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
+import datetime as dt
+    
+def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
     rel_anita["SALDO"] = (
     rel_anita["SALDO"].replace(",", ".", regex=True).astype(float).round(2)
@@ -32,26 +33,19 @@ def conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     )
 
     nota_map = rel_anita.set_index("SALDO")["NOTA"].to_dict()
-    conciliado["Nota_Anita"] = conciliado["SALDO"].map(nota_map)
+    conciliado["nota_anita"] = conciliado["SALDO"].map(nota_map)
+    duplicata = rel_anita.set_index("SALDO")["DUPLICATA"].to_dict()
+    conciliado["duplicata_anita"] = conciliado["SALDO"].map(duplicata)
+    
+    # conciliado["nota_anita"] = conciliado["nota_anita"].drop_duplicates() # possível solução para o erro de duplicação de notas
 
-    conciliado = conciliado.reindex(columns=["Valor_novo", "SALDO", "Nota_Anita"]).sort_index(
+    conciliado = conciliado.reindex(columns=["Valor_novo", "SALDO", "nota_anita", "duplicata_anita"]).sort_index(
         ascending=False
     )
     
     conciliado.rename(
         columns={"Valor_novo": "Valor_Safra", "SALDO": "Valor_Anita"}, inplace=True
     )
-    
-    # rel_safra["Nominal (R$)"] = (
-    #     rel_safra["Nominal (R$)"].replace(",", ".", regex=True).astype(float).round(2)
-    # ).sort_values(ascending=False)
-
-    # conciliado = rel_safra.merge(
-    #     rel_anita, left_on="Nominal (R$)", right_on="SALDO", how="outer"
-    # )
-    # conciliado = conciliado.reindex(columns=["Nominal (R$)", "SALDO"]).sort_index(
-    #     ascending=False
-    # )
     
     conciliado["Conciliado"] = [
         f"=IF(A{i}=B{i},TRUE,FALSE)" for i in range(2, len(conciliado) + 2)
@@ -77,7 +71,7 @@ def processar_arquivo(caminho_arquivo: Path):
     except Exception as e:
         raise ValueError(f"Padrão do nome do arquivo inválido ({nome_arquivo}): {e}")
 
-    data_formatada: pd.Timestamp = pd.Timestamp(year=2025, month=mes, day=dia)
+    data_formatada: pd.Timestamp = pd.Timestamp(year=dt.datetime.now().year, month=mes, day=dia)
     print(f"Data FORMATADA: {data_formatada}")
     print(f"Data VALUE: {data_formatada.value}")
 
@@ -86,13 +80,14 @@ def processar_arquivo(caminho_arquivo: Path):
     df_anita = ra.execute(data_formatada.strftime("%Y-%m-%d"))
 
     print("Processando...\n")
-    conciliado = conciliacao_DDA(df_safra, df_anita)
+    conciliado = _conciliacao_DDA(df_safra, df_anita)
     print(f"Tabela Final\n{conciliado}")
 
     nome_arquivo_saida = f"relatorio_{data_formatada.strftime('%d-%m-%Y')}.xlsx"
     caminho_saida = Path(
         f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\RelatórioDDA\\{nome_arquivo_saida}"
     )
+    
     # Para teste local, descomente:
     # caminho_saida = Path(
     #     f"C:\\Users\\pedro.bertoldo\\Desktop\\asdasd\\{nome_arquivo_saida}"
@@ -148,7 +143,7 @@ if __name__ == "__main__":
     print(pyfiglet.figlet_format("DDA\nAutomatizado\n", font="slant"))
     print(f"Lista de arquivos processados:\n{bd.carregar_log()}")
 
-    # Defina a pasta que será verificada
+    # Defina a pasta que será verificada DOCKER
     # pasta_para_verificar = Path(
     #     "\\mnt\\m:\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
     # )
