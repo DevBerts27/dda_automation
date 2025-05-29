@@ -1,23 +1,23 @@
 from pathlib import Path
 import pandas as pd
 
-def encontra_arquivos() -> list[Path]:
-    """Procura arquivos que começam com 'boletos dda' em uma estrutura de diretórios."""
-    caminho_base = Path(
-        R"\\portaarquivos\Agenda\TESOURARIA\CONTAS A PAGAR\Conciliação DDA\2025"
-    )
-    # caminho_base = Path(
-    #     R"C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste"
-    # )
+# def encontra_arquivos() -> list[Path]:
+#     """Procura arquivos que começam com 'boletos dda' em uma estrutura de diretórios."""
+#     caminho_base = Path(
+#         R"\\portaarquivos\Agenda\TESOURARIA\CONTAS A PAGAR\Conciliação DDA\2025"
+#     )
+#     # caminho_base = Path(
+#     #     R"C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste"
+#     # )
 
-    result:list = []
-    for pasta, _, lista_arquivos in caminho_base.walk(top_down=False):
-        for arquivo in lista_arquivos:
-            if arquivo.lower().startswith("boletos dda"):
-                caminho_completo = Path(pasta) / arquivo
-                result.append(caminho_completo)
+#     result:list = []
+#     for pasta, _, lista_arquivos in caminho_base.walk(top_down=False):
+#         for arquivo in lista_arquivos:
+#             if arquivo.lower().startswith("boletos dda"):
+#                 caminho_completo = Path(pasta) / arquivo
+#                 result.append(caminho_completo)
 
-    return result
+#     return result
 
 def padronizar_tabelas(df: pd.DataFrame) -> pd.DataFrame:
     """Padroniza as colunas e formatação da tabela importada."""
@@ -40,6 +40,8 @@ def padronizar_tabelas(df: pd.DataFrame) -> pd.DataFrame:
 
     # Ordena o DataFrame por valor nominal
     df.sort_values(by="Nominal (R$)", ascending=False, inplace=True)
+    
+    df["desconto"] = df["Nominal (R$)"] - df["Valor Total (R$)"]
 
     return df
 
@@ -90,4 +92,4 @@ def execute(data: str, arquivo:Path) -> pd.DataFrame:
     return df_filtrado
 
 # if __name__ == "__main__":
-#     execute("03-01-2025")
+#     execute("01-05-2025","\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\05-MAIO\\Boletos DDA 0105.xlsx")

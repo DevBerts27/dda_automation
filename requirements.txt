@@ -5,4 +5,3 @@ pyodbc
 numpy
 watchdog
 pyfiglet
-numpy
