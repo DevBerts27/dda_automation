@@ -34,12 +34,25 @@ def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
     nota_map = rel_anita.set_index("SALDO")["NOTA"].to_dict()
     conciliado["nota_anita"] = conciliado["SALDO"].map(nota_map)
-    duplicata = rel_anita.set_index("SALDO")["DUPLICATA"].to_dict()
-    conciliado["duplicata_anita"] = conciliado["SALDO"].map(duplicata)
+    
+    # duplicata = rel_anita.set_index("SALDO")["DUPLICATA"].to_dict()
+    # conciliado["duplicata_anita"] = conciliado["SALDO"].map(duplicata)
+    
+    cod_for = rel_anita.set_index("SALDO")["COD_FORNECEDOR"].to_dict()
+    conciliado["cod_fornecedor_anita"] = conciliado["SALDO"].map(cod_for)
+    
+    nome_for = rel_anita.set_index("SALDO")["NOME_FORNECEDOR"].to_dict()
+    conciliado["nome_fornecedor_anita"] = conciliado["SALDO"].map(nome_for)
+
+    transportadora = rel_anita.set_index("SALDO")["TRANSPORTADORA"].to_dict()
+    conciliado["cod_transportadora_anita"] = conciliado["SALDO"].map(transportadora)
+    
+    nome_ben = rel_safra.set_index("Valor_novo")["Beneficiário"].to_dict()
+    conciliado["nome_beneficiario_safra"] = conciliado["Valor_novo"].map(nome_ben)
     
     # conciliado["nota_anita"] = conciliado["nota_anita"].drop_duplicates() # possível solução para o erro de duplicação de notas
 
-    conciliado = conciliado.reindex(columns=["Valor_novo", "SALDO", "nota_anita", "duplicata_anita"]).sort_index(
+    conciliado = conciliado.reindex(columns=["Valor_novo", "nome_beneficiario_safra", "SALDO", "nota_anita", "cod_transportadora_anita", "cod_fornecedor_anita", "nome_fornecedor_anita"]).sort_index(
         ascending=False
     )
     
@@ -48,7 +61,7 @@ def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     )
     
     conciliado["Conciliado"] = [
-        f"=IF(A{i}=B{i},TRUE,FALSE)" for i in range(2, len(conciliado) + 2)
+        f"=IF(A{i}=C{i},TRUE,FALSE)" for i in range(2, len(conciliado) + 2)
     ]
     return conciliado
 
@@ -147,9 +160,11 @@ if __name__ == "__main__":
     # pasta_para_verificar = Path(
     #     "\\mnt\\m:\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
     # )
+    
     pasta_para_verificar = Path(
         "\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
     )
+    
     # Para testes locais, descomente:
     # pasta_para_verificar = Path("C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste")
 
