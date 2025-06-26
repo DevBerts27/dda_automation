@@ -12,13 +12,15 @@ import numpy as np
 import Database.BD_cache as bd
 import extrato_safra as es
 import relat_anita as ra
+import relat_adv as radv
 
 import datetime as dt
-    
+
+
 def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
     rel_anita["SALDO"] = (
-    rel_anita["SALDO"].replace(",", ".", regex=True).astype(float).round(2)
+        rel_anita["SALDO"].replace(",", ".", regex=True).astype(float).round(2)
     ).sort_values(ascending=False)
 
     rel_safra["Valor_novo"] = np.where(
@@ -29,37 +31,52 @@ def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     )
 
     conciliado = rel_safra.merge(
-        rel_anita, left_on="Valor_novo", right_on="SALDO", how="outer",
+        rel_anita,
+        left_on="Valor_novo",
+        right_on="SALDO",
+        how="outer",
     )
 
     nota_map = rel_anita.set_index("SALDO")["NOTA"].to_dict()
     conciliado["nota_anita"] = conciliado["SALDO"].map(nota_map)
-    
+
     # duplicata = rel_anita.set_index("SALDO")["DUPLICATA"].to_dict()
     # conciliado["duplicata_anita"] = conciliado["SALDO"].map(duplicata)
-    
+
     cod_for = rel_anita.set_index("SALDO")["COD_FORNECEDOR"].to_dict()
     conciliado["cod_fornecedor_anita"] = conciliado["SALDO"].map(cod_for)
-    
+
     nome_for = rel_anita.set_index("SALDO")["NOME_FORNECEDOR"].to_dict()
     conciliado["nome_fornecedor_anita"] = conciliado["SALDO"].map(nome_for)
 
     transportadora = rel_anita.set_index("SALDO")["TRANSPORTADORA"].to_dict()
     conciliado["cod_transportadora_anita"] = conciliado["SALDO"].map(transportadora)
-    
+
+    boleto = rel_anita.set_index("SALDO")["BOLETO"].to_dict()
+    conciliado["boleto_anita"] = conciliado["SALDO"].map(boleto)
+
     nome_ben = rel_safra.set_index("Valor_novo")["Beneficiário"].to_dict()
     conciliado["nome_beneficiario_safra"] = conciliado["Valor_novo"].map(nome_ben)
-    
+
     # conciliado["nota_anita"] = conciliado["nota_anita"].drop_duplicates() # possível solução para o erro de duplicação de notas
 
-    conciliado = conciliado.reindex(columns=["Valor_novo", "nome_beneficiario_safra", "SALDO", "nota_anita", "cod_transportadora_anita", "cod_fornecedor_anita", "nome_fornecedor_anita"]).sort_index(
-        ascending=False
-    )
-    
+    conciliado = conciliado.reindex(
+        columns=[
+            "Valor_novo",
+            "nome_beneficiario_safra",
+            "SALDO",
+            "nota_anita",
+            "boleto_anita",
+            "cod_transportadora_anita",
+            "cod_fornecedor_anita",
+            "nome_fornecedor_anita",
+        ]
+    ).sort_index(ascending=False)
+
     conciliado.rename(
         columns={"Valor_novo": "Valor_Safra", "SALDO": "Valor_Anita"}, inplace=True
     )
-    
+
     conciliado["Conciliado"] = [
         f"=IF(A{i}=C{i},TRUE,FALSE)" for i in range(2, len(conciliado) + 2)
     ]
@@ -84,13 +101,16 @@ def processar_arquivo(caminho_arquivo: Path):
     except Exception as e:
         raise ValueError(f"Padrão do nome do arquivo inválido ({nome_arquivo}): {e}")
 
-    data_formatada: pd.Timestamp = pd.Timestamp(year=dt.datetime.now().year, month=mes, day=dia)
+    data_formatada: pd.Timestamp = pd.Timestamp(
+        year=dt.datetime.now().year, month=mes, day=dia
+    )
     print(f"Data FORMATADA: {data_formatada}")
     print(f"Data VALUE: {data_formatada.value}")
 
     # Processamento dos dados
     df_safra = es.execute(data_formatada.strftime("%d-%m-%Y"), caminho_arquivo)
     df_anita = ra.execute(data_formatada.strftime("%Y-%m-%d"))
+    df_adv = radv.execute(data_formatada.strftime("%Y-%m-%d"))
 
     print("Processando...\n")
     conciliado = _conciliacao_DDA(df_safra, df_anita)
@@ -100,7 +120,7 @@ def processar_arquivo(caminho_arquivo: Path):
     caminho_saida = Path(
         f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025\\RelatórioDDA\\{nome_arquivo_saida}"
     )
-    
+
     # Para teste local, descomente:
     # caminho_saida = Path(
     #     f"C:\\Users\\pedro.bertoldo\\Desktop\\asdasd\\{nome_arquivo_saida}"
@@ -109,6 +129,7 @@ def processar_arquivo(caminho_arquivo: Path):
     with pd.ExcelWriter(caminho_saida, engine="openpyxl") as writer:
         df_safra.to_excel(writer, sheet_name="Safra", index=False)
         df_anita.to_excel(writer, sheet_name="Anita", index=False)
+        df_adv.to_excel(writer, sheet_name="ADV", index=False)
         conciliado.to_excel(writer, sheet_name="Conciliado", index=False)
 
     bd.salvar_no_log(nome_arquivo)
@@ -160,11 +181,11 @@ if __name__ == "__main__":
     # pasta_para_verificar = Path(
     #     "\\mnt\\m:\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
     # )
-    
+
     pasta_para_verificar = Path(
         "\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
     )
-    
+
     # Para testes locais, descomente:
     # pasta_para_verificar = Path("C:\\Users\\pedro.bertoldo\\Desktop\\Pasta_teste")
 
