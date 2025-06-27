@@ -52,8 +52,8 @@ def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     transportadora = rel_anita.set_index("SALDO")["TRANSPORTADORA"].to_dict()
     conciliado["cod_transportadora_anita"] = conciliado["SALDO"].map(transportadora)
 
-    boleto = rel_anita.set_index("SALDO")["BOLETO"].to_dict()
-    conciliado["boleto_anita"] = conciliado["SALDO"].map(boleto)
+    n_documento = rel_safra.set_index("Valor_novo")["Nº documento"].to_dict()
+    conciliado["n_documento_safra"] = conciliado["Valor_novo"].map(n_documento)
 
     nome_ben = rel_safra.set_index("Valor_novo")["Beneficiário"].to_dict()
     conciliado["nome_beneficiario_safra"] = conciliado["Valor_novo"].map(nome_ben)
@@ -64,9 +64,9 @@ def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
         columns=[
             "Valor_novo",
             "nome_beneficiario_safra",
+            "n_documento_safra",
             "SALDO",
             "nota_anita",
-            "boleto_anita",
             "cod_transportadora_anita",
             "cod_fornecedor_anita",
             "nome_fornecedor_anita",
