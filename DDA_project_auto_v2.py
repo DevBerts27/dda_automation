@@ -55,6 +55,9 @@ def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     n_documento = rel_safra.set_index("Valor_novo")["Nº documento"].to_dict()
     conciliado["n_documento_safra"] = conciliado["Valor_novo"].map(n_documento)
 
+    situacao = rel_safra.set_index("Valor_novo")["Situação"].to_dict()
+    conciliado["situacao_safra"] = conciliado["Valor_novo"].map(situacao)
+
     nome_ben = rel_safra.set_index("Valor_novo")["Beneficiário"].to_dict()
     conciliado["nome_beneficiario_safra"] = conciliado["Valor_novo"].map(nome_ben)
 
@@ -65,6 +68,7 @@ def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
             "Valor_novo",
             "nome_beneficiario_safra",
             "n_documento_safra",
+            "situacao_safra",
             "SALDO",
             "nota_anita",
             "cod_transportadora_anita",
@@ -78,8 +82,14 @@ def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
     )
 
     conciliado["Conciliado"] = [
-        f"=IF(A{i}=C{i},TRUE,FALSE)" for i in range(2, len(conciliado) + 2)
+        f"=IF(A{i}=E{i},TRUE,FALSE)" for i in range(2, len(conciliado) + 2)
     ]
+    
+    conciliado["observacoes"] = None
+    
+    conciliado["para_maristela"] = None
+    conciliado["para_loja"] = None
+    
     return conciliado
 
 def processar_arquivo(caminho_arquivo: Path):
@@ -182,8 +192,10 @@ if __name__ == "__main__":
     #     "\\mnt\\m:\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
     # )
 
+    ano = dt.datetime.today().year
+
     pasta_para_verificar = Path(
-        "\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\2025"
+        f"\\\\portaarquivos\\Agenda\\TESOURARIA\\CONTAS A PAGAR\\Conciliação DDA\\{ano}"
     )
 
     # Para testes locais, descomente:

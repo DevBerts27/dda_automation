@@ -1,6 +1,5 @@
 import sqlite3
 from pathlib import Path
-import pandas as pd
 
 # Nome do banco de dados
 DB_PATH = "LOG.db"
