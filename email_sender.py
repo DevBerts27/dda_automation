@@ -8,6 +8,7 @@ import Config.settings as settings
 import pandas as pd
 import re
 import tempfile
+from dict_lojas_emails import lojas_emails
 
 PATH_LOCAL = os.path.abspath(os.path.dirname(__file__))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Config.settings")
@@ -24,31 +25,60 @@ PADRAO_NOME = re.compile(r"^relatorio_\d{2}-\d{2}-\d{4}.xlsx$", re.IGNORECASE)
 
 def mini_filtro(df: pd.DataFrame):
     
-    if "para_maristela" in df.columns:
-        print("para_mari")
-        mari = df[df["para_maristela"].astype(str).str.lower() == "x"]
-
-        with tempfile.TemporaryDirectory() as tmp_dir:
-        
-            tmp_dir = Path(tmp_dir) / "verificar_lancamento.xlsx"
-            mari.to_excel(tmp_dir, index=False)
-
-            subject=""
-            body=""
-            to_maristela = ["pedro.bertoldo@balaroti.com.br"]
-            cc=[""]
-            
-            enviar_email(subject,body,to_maristela,cc,attachments=[tmp_dir])    
-        
-        return None
+    pos_para_mari = df.columns.get_loc("para_maristela")
+    pos_para_loja = df.columns.get_loc("para_loja")
     
-    if "para_loja" in df.columns:
-        print("para_loja")
-        loja = df[df["para_loja"].notna() & (df["para_loja"].astype(str).str.strip() != "")]
+    for idx, linha in df.iterrows():
         
-        lista_lojas = loja["para_loja"].tolist()
+        valor_x = linha.iat[pos_para_mari]
+        valor_n = linha.iat[pos_para_loja]
         
-        return loja
+        if str(valor_x).strip().lower() == "x":
+            print("para_mari")
+            mari = df[df["para_maristela"].astype(str).str.lower() == "x"]
+
+            with tempfile.TemporaryDirectory() as tmp_dir:
+            
+                tmp_dir = Path(tmp_dir) / "verificar_lancamento.xlsx"
+                mari.to_excel(tmp_dir, index=False)
+
+                subject="EMAIL_MARISTELA"
+                body="AAAAAAAA"
+                # to_maristela = ["maristela@balaroti.com.br"]
+                to = ["pedro.bertoldo@balaroti.com.br"]
+                cc=[""]
+                
+                enviar_email(subject,body,to,cc,attachments=[tmp_dir])    
+            
+            continue
+        
+        if valor_n.is_integer():
+            print(f"para_loja: {int(valor_n)}")
+            
+            linha_loja = df[df["para_loja"] == int(valor_n)]
+            
+            loja_ite = int(valor_n)
+            email_gerente = lojas_emails.get(loja_ite)
+            
+            if email_gerente == "?" or email_gerente == None:
+                print("Email não cadastrado")
+                continue
+            else:
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                
+                    tmp_dir = Path(tmp_dir) / f"verificar_loja_{int(valor_n)}.xlsx"
+                    linha_loja.to_excel(tmp_dir, index=False)
+
+                    subject=f"EMAIL_LOJA_{int(valor_n)}"
+                    body="IIIIIIIII"
+                    to = email_gerente
+                    cc=[""]
+                    
+                    enviar_email(subject,body,to,cc,attachments=[tmp_dir])
+                    
+                    continue
+
+            continue
 
 
 def mini_processador(caminho: Path = PASTA_ENTRADA):
