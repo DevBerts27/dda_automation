@@ -24,40 +24,44 @@ PASTA_ENTRADA = Path(
 PADRAO_NOME = re.compile(r"^relatorio_\d{2}-\d{2}-\d{4}.xlsx$", re.IGNORECASE)
 
 def mini_filtro(df: pd.DataFrame):
+
+    print("para_mari")
+    mari = df[df["para_maristela"].astype(str).str.lower() == "x"]
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
     
-    pos_para_mari = df.columns.get_loc("para_maristela")
+        tmp_dir = Path(tmp_dir) / "verificar_lancamento.xlsx"
+        mari.to_excel(tmp_dir, index=False)
+
+        subject="EMAIL_MARISTELA"
+        body="AAAAAAAA"
+        # to_maristela = ["maristela@balaroti.com.br"]
+        to = ["pedro.bertoldo@balaroti.com.br"]
+        cc=[""]
+        
+        enviar_email(subject,body,to,cc,attachments=[tmp_dir])    
+
+
     pos_para_loja = df.columns.get_loc("para_loja")
     
-    for idx, linha in df.iterrows():
+    valor_lista:list[int] = []
+    
+    for _, linha in df.iterrows():
         
-        valor_x = linha.iat[pos_para_mari]
         valor_n = linha.iat[pos_para_loja]
-        
-        if str(valor_x).strip().lower() == "x":
-            print("para_mari")
-            mari = df[df["para_maristela"].astype(str).str.lower() == "x"]
-
-            with tempfile.TemporaryDirectory() as tmp_dir:
-            
-                tmp_dir = Path(tmp_dir) / "verificar_lancamento.xlsx"
-                mari.to_excel(tmp_dir, index=False)
-
-                subject="EMAIL_MARISTELA"
-                body="AAAAAAAA"
-                # to_maristela = ["maristela@balaroti.com.br"]
-                to = ["pedro.bertoldo@balaroti.com.br"]
-                cc=[""]
-                
-                enviar_email(subject,body,to,cc,attachments=[tmp_dir])    
-            
-            continue
-        
         if valor_n.is_integer():
-            print(f"para_loja: {int(valor_n)}")
+            valor_lista.append(valor_n)
+    
+    valor_lista = list(set(valor_lista))
+    
+    for valor_n_iter in valor_lista:
+        
+        if valor_n_iter.is_integer():
+            print(f"para_loja: {int(valor_n_iter)}")
+
+            linha_loja = df[df["para_loja"] == int(valor_n_iter)]
             
-            linha_loja = df[df["para_loja"] == int(valor_n)]
-            
-            loja_ite = int(valor_n)
+            loja_ite = int(valor_n_iter)
             email_gerente = lojas_emails.get(loja_ite)
             
             if email_gerente == "?" or email_gerente == None:
@@ -66,10 +70,10 @@ def mini_filtro(df: pd.DataFrame):
             else:
                 with tempfile.TemporaryDirectory() as tmp_dir:
                 
-                    tmp_dir = Path(tmp_dir) / f"verificar_loja_{int(valor_n)}.xlsx"
+                    tmp_dir = Path(tmp_dir) / f"verificar_loja_{int(valor_n_iter)}.xlsx"
                     linha_loja.to_excel(tmp_dir, index=False)
 
-                    subject=f"EMAIL_LOJA_{int(valor_n)}"
+                    subject=f"EMAIL_LOJA_{int(valor_n_iter)}"
                     body="IIIIIIIII"
                     to = email_gerente
                     cc=[""]
