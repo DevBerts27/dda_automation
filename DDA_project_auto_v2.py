@@ -16,6 +16,7 @@ import relat_adv as radv
 
 import datetime as dt
 
+NOME_TABELA_BANCO = "execucoes"
 
 def _conciliacao_DDA(rel_safra: pd.DataFrame, rel_anita: pd.DataFrame):
 
@@ -97,7 +98,7 @@ def processar_arquivo(caminho_arquivo: Path):
     time.sleep(5)
 
     nome_arquivo = caminho_arquivo.name
-    arquivos_processados = bd.carregar_log()
+    arquivos_processados = bd.carregar_log(NOME_TABELA_BANCO)
 
     if nome_arquivo in arquivos_processados:
         print(f"📌 Arquivo {nome_arquivo} já foi processado. Pulando...")
@@ -142,7 +143,7 @@ def processar_arquivo(caminho_arquivo: Path):
         df_adv.to_excel(writer, sheet_name="ADV", index=False)
         conciliado.to_excel(writer, sheet_name="Conciliado", index=False)
 
-    bd.salvar_no_log(nome_arquivo)
+    bd.salvar_no_log(nome_arquivo,NOME_TABELA_BANCO)
     print("Concluído! ;)")
 
 
@@ -150,7 +151,7 @@ def main_loop(caminho_pasta: Path, extensoes: List[str]):
     print("Iniciando loop de verificação (a cada 60 segundos)...")
     while True:
         try:
-            arquivos_processados = bd.carregar_log()
+            arquivos_processados = bd.carregar_log(NOME_TABELA_BANCO)
             # Listar os arquivos com as extensões desejadas
             arquivos = [
                 arquivo
@@ -181,11 +182,11 @@ def main_loop(caminho_pasta: Path, extensoes: List[str]):
 
 
 if __name__ == "__main__":
-    if not bd.banco_existe():
-        bd.criar_tabela()
+    if not bd.banco_existe(NOME_TABELA_BANCO):
+        bd.criar_tabela(NOME_TABELA_BANCO)
 
     print(pyfiglet.figlet_format("DDA\nAutomatizado\n", font="slant"))
-    print(f"Lista de arquivos processados:\n{bd.carregar_log()}")
+    print(f"Lista de arquivos processados:\n{bd.carregar_log(NOME_TABELA_BANCO)}")
 
     # Defina a pasta que será verificada DOCKER
     # pasta_para_verificar = Path(
