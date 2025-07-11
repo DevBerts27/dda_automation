@@ -32,7 +32,7 @@ lojas_emails = {
     59 : ["gean@balaroti.com.br","fiscal.linhaverde@balaroti.com.br"],#GERENTE DE LOJA
     60 : ["ivana@balaroti.com.br","sacitajai@balaroti.com.br"],#GERENTE DE LOJA
     61 : ["amanda@ps.balaroti.com.br","daiana.ferreira@balaroti.com.br","adminstrativomaringa@balaroti.com.br"],#GERENTE DE LOJA
-    62 : ["kifa@balaroti.com.br","admlondrina@balaroti.com.br"],#GERENTE DE LOJA
+    62 : ["kifa@balaroti.com.br","admlondrinatd@balaroti.com.br"],#GERENTE DE LOJA
     63 : ["cdcascavel@balaroti.com.br"],
     64 : ["cdarapongas@balaroti.com.br"],
     65 : ["sandra.cristina@balaroti.com.br","fiscal.cascavel@balaroti.com.br","sac.cascavel@balaroti.com.br"],#GERENTE DE LOJA
@@ -40,5 +40,9 @@ lojas_emails = {
     67 : ["joaosouza@balaroti.com.br","wiullian.oriente@balaroti.com.br","joinvillesul@balaroti.com.br"], #GERENTE DE VENDA
     69 : ["adm.toledo@balaroti.com.br","fiscal.toledo@balaroti.com.br","clayton.adams@balaroti.com.br"],
     70 : ["andreinunes@balaroti.com.br"],#GERENTE DE LOJA
-    71 : ["marcela.teles@balaroti.com.br","andrei.nunes@kinta.com.br"]
+    71 : ["marcela.teles@balaroti.com.br","andrei.nunes@kinta.com.br"],
+    100 : ["roberto@balaroti.com.br"],
+    101 : ["sandro@balaroti.com.br"],
+    102 : ["fernando.beker@balaroti.com.br"],
+    103 : ["crm@balaroti.com.br"]
 }
