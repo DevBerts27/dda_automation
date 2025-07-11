@@ -51,23 +51,26 @@ def enviar_email(subject: str, body: str, to: list, cc=None, attachments=None):
 
 def pipeline(df: pd.DataFrame, data_arquivo):
 
-    print("para_mari")
     mari = df[df["para_maristela"].astype(str).str.lower() == "x"]
 
-    with tempfile.TemporaryDirectory() as tmp_dir:
-    
-        tmp_dir = Path(tmp_dir) / f"lancamentos_{data_arquivo}.xlsx"
-        mari.to_excel(tmp_dir, index=False)
-
-        subject="Verificar lancamençentos"
-        body=f"""Olá \nSegue em anexo lançamentos do dia {data_arquivo} para verificar.
-        \nResponder para financeiro@balaroti.com.br"""
-        to_maristela = ["maristela@balaroti.com.br","rosi.santos@balaroti.com.br","aline.rodrigues@balaroti.com.br"]
-        # to = ["pedro.bertoldo@balaroti.com.br"]
-        cc=["financeiro@balaroti.com"]
-        # cc=[]
+    if mari.empty:
+        print("Nada para enviar para a Maristela...")
         
-        enviar_email(subject,body,to,cc,attachments=[tmp_dir])    
+    else:
+        
+        print("Enviando para Maristela")
+        with tempfile.TemporaryDirectory() as tmp_dir:
+        
+            tmp_dir = Path(tmp_dir) / f"lancamentos_{data_arquivo}.xlsx"
+            mari.to_excel(tmp_dir, index=False)
+
+            subject="Verificar lancamençentos"
+            body=f"""Olá \nSegue em anexo lançamentos do dia {data_arquivo} para verificar.
+            \nResponder para financeiro@balaroti.com.br"""
+            to = ["maristela@balaroti.com.br","rosi.santos@balaroti.com.br","aline.rodrigues@balaroti.com.br"]
+            cc=["financeiro@balaroti.com.br","pedro.bertoldo@balaroti.com.br"]
+            
+            enviar_email(subject,body,to,cc,attachments=[tmp_dir])    
 
 
     pos_para_loja = df.columns.get_loc("para_loja")
@@ -105,8 +108,7 @@ def pipeline(df: pd.DataFrame, data_arquivo):
                     body=f"""Olá Loja {int(valor_n_iter)}
                     \nPoderia verificar este lançamento em anexo ?\nResponder para financeiro@balaroti.com.br"""
                     to = email_gerente
-                    cc=["financeiro@balaroti.com"]
-                    # cc=[]
+                    cc=["financeiro@balaroti.com.br","pedro.bertoldo@balaroti.com.br"]
                     
                     enviar_email(subject,body,to,cc,attachments=[tmp_dir])
                     

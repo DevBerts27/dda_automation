@@ -1,7 +1,7 @@
 lojas_emails = {
     1 : ["edson@balaroti.com.br""Ivan Givaldo","ivan.givaldo@balaroti.com.br"], #GERENTE DE LOJA
     3 : ["lancamentonotas@balaroti.com.br","recebimento1@balaroti.com.br"],
-    10 : ["iracelly@balaroti.com.br","camila.santos@balaroti.com.br","lucas.waiter@balaroti.com.br"],
+    10 : ["iracelly@balaroti.com.br"],
     11 : ["djalma@balaroti.com.br","administrativopinhais@balaroti.com.br"],#GERENTE DE LOJA
     13 : ["caique@kinta.com.br","contato@kinta.com.br","suelen@kinta.com.br"],#GERENTE DE LOJA
     16 : ["fabio@balaroti.com.br","sacbacacheri@balaroti.com.br"],#GERENTE DE LOJA
